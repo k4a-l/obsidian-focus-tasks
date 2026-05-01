@@ -1,0 +1,52 @@
+{
+	"name": "obsidian-current-task",
+	"version": "1.0.0",
+	"description": "Show current task in current file and move between tasks",
+	"main": "main.js",
+	"type": "module",
+	"scripts": {
+		"tsc": "tsc -noEmit",
+		"tsc:watch": "tsc -noEmit --watch",
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"version": "node version-bump.mjs && git add manifest.json versions.json package.json && npm run check",
+		"test": "vitest",
+		"coverage": "vitest run --coverage",
+		"lint": "biome lint --write",
+		"format": "biome format --write && remark . --output",
+		"check": "biome check --write  --diagnostic-level=warn",
+		"ci": "biome ci --diagnostic-level=warn",
+		"prepare": "husky"
+	},
+	"keywords": [],
+	"author": "kasahala",
+	"url": "https://github.com/k4a-l/obsidian-current-task",
+	"license": "MIT",
+	"devDependencies": {
+		"@biomejs/biome": "2.2.4",
+		"@cspell/eslint-plugin": "^9.2.1",
+		"@types/node": "^24.5.2",
+		"@types/semver": "^7.7.1",
+		"@vitest/coverage-v8": "^3.2.4",
+		"builtin-modules": "5.0.0",
+		"esbuild": "0.25.10",
+		"husky": "^9.1.7",
+		"obsidian": "latest",
+		"remark": "^15.0.1",
+		"remark-cli": "^12.0.1",
+		"remark-preset-lint-recommended": "^7.0.1",
+		"tslib": "2.8.1",
+		"typescript": "5.9.2",
+		"vite-tsconfig-paths": "^5.1.4",
+		"vitest": "^3.2.4"
+	},
+	"dependencies": {},
+	"remarkConfig": {
+		"settings": {
+			"bullet": "-"
+		},
+		"plugins": [
+			"remark-preset-lint-recommended"
+		]
+	}
+}
