@@ -1,9 +1,9 @@
 {
-	"id": "obsidian-current-task",
-	"name": "Current Task",
+	"id": "obsidian-k4a-tasks",
+	"name": "k4a Tasks",
 	"version": "1.0.0",
 	"minAppVersion": "0.12.0",
-	"description": "Show current tasks in the active note and move between them.",
+	"description": "A personal task helper plugin to manage tasks in current active note and daily notes.",
 	"author": "kasahala",
 	"authorUrl": "https://github.com/k4a-l",
 	"fundingUrl": {

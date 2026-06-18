@@ -1,10 +1,13 @@
 import { debounce, Plugin, type TFile, type WorkspaceLeaf } from "obsidian";
-import { CurrentTaskView, VIEW_TYPE_CURRENT_TASK } from "./CurrentTaskView";
-import { type CurrentTaskPluginSettings, DEFAULT_SETTINGS } from "./settings";
-import { TaskExtractor } from "./TaskExtractor";
+import {
+	ActiveNoteTaskView,
+	VIEW_TYPE_ACTIVE_NOTE_TASK,
+} from "./features/active-note/ActiveNoteTaskView";
+import { TaskExtractor } from "./features/active-note/TaskExtractor";
+import { DEFAULT_SETTINGS, type TasksPluginSettings } from "./settings";
 
-export default class CurrentTaskPlugin extends Plugin {
-	settings: CurrentTaskPluginSettings;
+export default class PluginClass extends Plugin {
+	settings: TasksPluginSettings;
 	statusBarItemEl: HTMLElement;
 	taskExtractor: TaskExtractor;
 	lastActiveFile: TFile | null = null;
@@ -24,8 +27,8 @@ export default class CurrentTaskPlugin extends Plugin {
 		);
 
 		this.registerView(
-			VIEW_TYPE_CURRENT_TASK,
-			(leaf: WorkspaceLeaf) => new CurrentTaskView(leaf, this),
+			VIEW_TYPE_ACTIVE_NOTE_TASK,
+			(leaf: WorkspaceLeaf) => new ActiveNoteTaskView(leaf, this),
 		);
 
 		// Status bar item
@@ -56,7 +59,7 @@ export default class CurrentTaskPlugin extends Plugin {
 	}
 
 	onunload() {
-		this.app.workspace.detachLeavesOfType(VIEW_TYPE_CURRENT_TASK);
+		this.app.workspace.detachLeavesOfType(VIEW_TYPE_ACTIVE_NOTE_TASK);
 	}
 
 	async loadSettings() {
@@ -71,14 +74,17 @@ export default class CurrentTaskPlugin extends Plugin {
 		const { workspace } = this.app;
 
 		let leaf: WorkspaceLeaf | null | undefined = null;
-		const leaves = workspace.getLeavesOfType(VIEW_TYPE_CURRENT_TASK);
+		const leaves = workspace.getLeavesOfType(VIEW_TYPE_ACTIVE_NOTE_TASK);
 
 		if (leaves.length > 0) {
 			leaf = leaves[0];
 		} else {
 			leaf = workspace.getRightLeaf(false);
 			if (leaf) {
-				await leaf.setViewState({ type: VIEW_TYPE_CURRENT_TASK, active: true });
+				await leaf.setViewState({
+					type: VIEW_TYPE_ACTIVE_NOTE_TASK,
+					active: true,
+				});
 			}
 		}
 
@@ -105,11 +111,13 @@ export default class CurrentTaskPlugin extends Plugin {
 
 		this.updateStatusBar(tasks.length);
 
-		const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_CURRENT_TASK);
+		const leaves = this.app.workspace.getLeavesOfType(
+			VIEW_TYPE_ACTIVE_NOTE_TASK,
+		);
 		if (leaves.length > 0) {
 			for (const leaf of leaves) {
 				const view = leaf.view;
-				if (view instanceof CurrentTaskView) {
+				if (view instanceof ActiveNoteTaskView) {
 					view.updateTasks(tasks);
 				}
 			}

@@ -1,7 +1,7 @@
 {
-	"name": "obsidian-current-task",
+	"name": "obsidian-k4a-tasks",
 	"version": "1.0.0",
-	"description": "Show current task in current file and move between tasks",
+	"description": "A personal task helper plugin to manage tasks in current active note and daily notes.",
 	"main": "main.js",
 	"type": "module",
 	"scripts": {

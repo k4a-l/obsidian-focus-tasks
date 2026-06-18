@@ -1,7 +1,7 @@
-export interface CurrentTaskPluginSettings {
+export interface TasksPluginSettings {
 	filterStatuses: string[];
 }
 
-export const DEFAULT_SETTINGS: CurrentTaskPluginSettings = {
+export const DEFAULT_SETTINGS: TasksPluginSettings = {
 	filterStatuses: [" "], // Default: incomplete tasks
 };

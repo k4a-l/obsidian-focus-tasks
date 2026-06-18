@@ -4,26 +4,26 @@ import {
 	MarkdownView,
 	type WorkspaceLeaf,
 } from "obsidian";
-import type CurrentTaskPlugin from "./main";
+import type PluginClass from "../../main";
 import type { ExtractedTask } from "./TaskExtractor";
 
-export const VIEW_TYPE_CURRENT_TASK = "current-task-view";
+export const VIEW_TYPE_ACTIVE_NOTE_TASK = "active-note-task-view";
 
-export class CurrentTaskView extends ItemView {
-	plugin: CurrentTaskPlugin;
+export class ActiveNoteTaskView extends ItemView {
+	plugin: PluginClass;
 	tasks: ExtractedTask[] = [];
 
-	constructor(leaf: WorkspaceLeaf, plugin: CurrentTaskPlugin) {
+	constructor(leaf: WorkspaceLeaf, plugin: PluginClass) {
 		super(leaf);
 		this.plugin = plugin;
 	}
 
 	getViewType(): string {
-		return VIEW_TYPE_CURRENT_TASK;
+		return VIEW_TYPE_ACTIVE_NOTE_TASK;
 	}
 
 	getDisplayText(): string {
-		return "Current Tasks";
+		return "Active Note Tasks";
 	}
 
 	getIcon(): string {
@@ -54,7 +54,7 @@ export class CurrentTaskView extends ItemView {
 
 		// --- Header (Filters) ---
 		const headerEl = container.createDiv({
-			cls: "current-task-header",
+			cls: "active-note-task-header",
 			attr: {
 				style:
 					"padding: 4px 5px; border-bottom: 1px solid var(--background-modifier-border);",
@@ -115,7 +115,7 @@ export class CurrentTaskView extends ItemView {
 
 		// --- Content (Tasks) ---
 		const contentEl = container.createDiv({
-			cls: "current-task-content",
+			cls: "active-note-task-content",
 			attr: { style: "padding: 10px; overflow-y: auto;" },
 		});
 
@@ -132,7 +132,7 @@ export class CurrentTaskView extends ItemView {
 
 		for (const task of this.tasks) {
 			const taskEl = contentEl.createDiv({
-				cls: "current-task-item",
+				cls: "active-note-task-item",
 				attr: {
 					style:
 						"cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: background-color 0.2s;",
