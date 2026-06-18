@@ -1,0 +1,125 @@
+/* k4a-tasks styles */
+
+.k4a-tasks-timer-banner {
+	padding: 8px 12px;
+	background-color: var(--background-secondary-alt);
+	border-bottom: 1px solid var(--background-modifier-border);
+	display: flex;
+	font-size: 0.9em;
+	color: var(--text-normal);
+
+	&.is-active {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 4px;
+	}
+
+	&.is-empty {
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		background-color: var(--background-message-warning, var(--background-secondary-alt));
+		cursor: pointer;
+		border-radius: 4px;
+		transition: background-color 0.2s;
+
+		&:hover {
+			background-color: var(--background-modifier-hover);
+		}
+
+		.k4a-banner-timer {
+			color: var(--text-muted);
+		}
+	}
+
+	.k4a-banner-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 4px 6px;
+		cursor: pointer;
+		border-radius: 4px;
+		transition: background-color 0.2s;
+
+		&:hover {
+			background-color: var(--background-modifier-hover);
+		}
+
+		&.is-completed {
+			.k4a-banner-task-name {
+				text-decoration: line-through;
+				color: var(--text-muted);
+			}
+			.k4a-banner-time-info {
+				color: var(--text-muted);
+				opacity: 0.8;
+			}
+			.k4a-banner-timer {
+				color: var(--text-muted);
+			}
+		}
+
+		&.is-upcoming {
+			.k4a-banner-task-name {
+				color: var(--text-muted);
+			}
+			.k4a-banner-time-info {
+				color: var(--text-muted);
+				opacity: 0.8;
+			}
+			.k4a-banner-timer {
+				color: var(--text-muted);
+			}
+		}
+
+		&.is-warning {
+			.k4a-banner-task-name {
+				color: var(--text-error);
+			}
+			.k4a-banner-time-info {
+				color: var(--text-error);
+				opacity: 0.8;
+			}
+			.k4a-banner-timer {
+			    color: var(--text-error);
+			}
+		}
+	}
+
+	.k4a-banner-left {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.k4a-banner-icon {
+		display: inline-block;
+	}
+
+	.k4a-banner-task-name {
+		font-weight: bold;
+	}
+
+	.k4a-banner-time-info {
+		color: var(--text-muted);
+		font-size: 0.85em;
+	}
+
+	.k4a-banner-right {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.k4a-banner-timer {
+		font-family: var(--font-monospace);
+		font-weight: bold;
+	}
+
+	.k4a-banner-warning-text {
+		color: var(--text-warning);
+		font-weight: bold;
+	}
+}
+
+

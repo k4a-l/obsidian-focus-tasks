@@ -1,5 +1,5 @@
 {
-	"name": "obsidian-k4a-tasks",
+	"name": "obsidian-focus-tasks",
 	"version": "1.0.0",
 	"description": "A personal task helper plugin to manage tasks in current active note and daily notes.",
 	"main": "main.js",

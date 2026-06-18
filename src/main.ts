@@ -4,12 +4,19 @@ import {
 	VIEW_TYPE_ACTIVE_NOTE_TASK,
 } from "./features/active-note/ActiveNoteTaskView";
 import { TaskExtractor } from "./features/active-note/TaskExtractor";
-import { DEFAULT_SETTINGS, type TasksPluginSettings } from "./settings";
+import { DailyNoteTaskManager } from "./features/daily-note/DailyNoteTaskManager";
+import { toggleTaskTime } from "./features/daily-note/dailyNote";
+import {
+	DEFAULT_SETTINGS,
+	type TasksPluginSettings,
+	TasksPluginSettingTab,
+} from "./settings";
 
 export default class PluginClass extends Plugin {
 	settings: TasksPluginSettings;
 	statusBarItemEl: HTMLElement;
 	taskExtractor: TaskExtractor;
+	dailyNoteTaskManager: DailyNoteTaskManager;
 	lastActiveFile: TFile | null = null;
 
 	// Debounced extraction to avoid freezing the editor
@@ -17,8 +24,20 @@ export default class PluginClass extends Plugin {
 
 	async onload() {
 		await this.loadSettings();
+		this.addSettingTab(new TasksPluginSettingTab(this.app, this));
 
 		this.taskExtractor = new TaskExtractor(this.app);
+		this.dailyNoteTaskManager = new DailyNoteTaskManager(this.app, this);
+		this.dailyNoteTaskManager.init();
+
+		// Add time toggle command
+		this.addCommand({
+			id: "toggle-task-time",
+			name: "Toggle/Update task time",
+			editorCallback: (editor) => {
+				toggleTaskTime(editor);
+			},
+		});
 
 		this.debouncedExtract = debounce(
 			this.extractAndDisplayTasks.bind(this),
@@ -40,7 +59,7 @@ export default class PluginClass extends Plugin {
 
 		this.updateStatusBar(0);
 
-		// Event listeners
+		// Event listeners for active note task extractor
 		this.registerEvent(
 			this.app.workspace.on("file-open", () => {
 				this.extractAndDisplayTasks();
@@ -60,8 +79,12 @@ export default class PluginClass extends Plugin {
 
 	onunload() {
 		this.app.workspace.detachLeavesOfType(VIEW_TYPE_ACTIVE_NOTE_TASK);
+		if (this.dailyNoteTaskManager) {
+			this.dailyNoteTaskManager.unload();
+		}
 	}
 
+	// Active note task extractor functions
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 	}

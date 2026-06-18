@@ -1,7 +1,7 @@
 {
-	"id": "obsidian-k4a-tasks",
-	"name": "k4a Tasks",
-	"version": "1.0.0",
+	"id": "obsidian-focus-tasks",
+	"name": "Focus Tasks",
+	"version": "1.1.0",
 	"minAppVersion": "0.12.0",
 	"description": "A personal task helper plugin to manage tasks in current active note and daily notes.",
 	"author": "kasahala",
