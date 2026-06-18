@@ -21,14 +21,14 @@ export class DailyNoteTaskManager {
 
 	init() {
 		this.plugin.registerEvent(
-			this.app.workspace.on("active-leaf-change", () => {
-				this.handleActiveLeafChange();
+			this.app.workspace.on("active-leaf-change", async () => {
+				await this.handleActiveLeafChange();
 			}),
 		);
 
 		this.plugin.registerEvent(
 			this.app.metadataCache.on("changed", async (file) => {
-				const dailyNoteFile = await getDailyNoteFile(this.app);
+				const dailyNoteFile = getDailyNoteFile();
 				if (dailyNoteFile && file.path === dailyNoteFile.path) {
 					await this.updateBanner();
 				}

@@ -1,11 +1,10 @@
 import moment from "moment";
+import { type App, type Editor, MarkdownView, type TFile } from "obsidian";
 import {
-	type App,
-	type Editor,
-	MarkdownView,
-	normalizePath,
-	TFile,
-} from "obsidian";
+	getAllDailyNotes,
+	getDailyNote,
+	getDailyNoteSettings,
+} from "obsidian-daily-notes-interface";
 
 export interface ActiveTrackingTask {
 	taskText: string;
@@ -20,40 +19,27 @@ export interface ActiveTrackingTask {
 export async function getDailyNoteConfig(
 	app: App,
 ): Promise<{ folder?: string; format?: string } | null> {
-	const configDir = app.vault.configDir;
-	const path = `${configDir}/daily-notes.json`;
-
 	try {
-		const exists = await app.vault.adapter.exists(path);
-		if (exists) {
-			const content = await app.vault.adapter.read(path);
-			return JSON.parse(content);
-		}
+		const settings = getDailyNoteSettings();
+		return {
+			folder: settings.folder,
+			format: settings.format,
+		};
 	} catch (e) {
-		console.error("Failed to read daily-notes.json", e);
+		console.error("Failed to get daily note settings", e);
+		return null;
 	}
-	return null;
 }
 
-export async function getDailyNoteFile(app: App): Promise<TFile | null> {
-	const config = await getDailyNoteConfig(app);
-	const format = config?.format || "YYYY-MM-DD";
-	const folder = config?.folder !== undefined ? config.folder : "";
-
-	const fileName = moment().format(format);
-
-	let path = `${fileName}.md`;
-	if (folder) {
-		path = normalizePath(`${folder}/${fileName}.md`);
-	} else {
-		path = normalizePath(path);
+export function getDailyNoteFile(): TFile | null {
+	try {
+		const dailyNotes = getAllDailyNotes();
+		const note = getDailyNote(moment(), dailyNotes);
+		return note || null;
+	} catch (e) {
+		console.error("Failed to get daily note file", e);
+		return null;
 	}
-
-	const file = app.vault.getAbstractFileByPath(path);
-	if (file instanceof TFile) {
-		return file;
-	}
-	return null;
 }
 
 export async function getActiveTrackingTasks(
@@ -61,10 +47,10 @@ export async function getActiveTrackingTasks(
 	warningThreshold: number,
 	upcomingThreshold: number,
 ): Promise<ActiveTrackingTask[]> {
-	const file = await getDailyNoteFile(app);
+	const file = getDailyNoteFile();
 	if (!file) return [];
 
-	const content = await app.vault.read(file);
+	const content = await app.vault.cachedRead(file);
 	const lines = content.split("\n");
 	const now = moment();
 	const todayStr = now.format("YYYY-MM-DD");
@@ -202,7 +188,7 @@ export function createBanner(
 			upcomingThreshold,
 		);
 		if (activeTasks.length === 0) {
-			const file = await getDailyNoteFile(app);
+			const file = getDailyNoteFile();
 			if (file) {
 				await jumpToDailyNoteLine(app, file);
 			}
@@ -357,7 +343,7 @@ export function updateBannerContent(
 				const row = bannerEl.createDiv({ cls: rowCls });
 				row.addEventListener("click", async (e) => {
 					e.stopPropagation(); // Prevent trigger bannerEl click
-					const file = await getDailyNoteFile(app);
+					const file = getDailyNoteFile();
 					if (file) {
 						await jumpToDailyNoteLine(app, file, task.lineNumber);
 					}
