@@ -181,7 +181,7 @@ export function createBanner(
 		cls: "k4a-tasks-timer-banner",
 	});
 
-	// If no tasks are active, clicking the banner itself will open the daily note
+	// タスクが空のときにバナー全体をクリックするとデイリーノートを開く
 	banner.addEventListener("click", async () => {
 		const activeTasks = await getActiveTrackingTasks(
 			app,
@@ -387,7 +387,7 @@ export function updateBannerContent(
 
 				const timeRangeStr = task.endTime
 					? `(${task.startTime} - ${task.endTime})`
-					: `(${task.startTime} 〜)`;
+					: `(${task.startTime} - )`;
 				const timeInfoEl = leftContainer.createSpan({
 					cls: "k4a-banner-time-info",
 				});
