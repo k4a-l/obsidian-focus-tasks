@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
-		"baseUrl": "src",
+		"strictPropertyInitialization": false,
+		"useDefineForClassFields": false,
 		"inlineSourceMap": true,
 		"inlineSources": true,
 		"module": "es2020",

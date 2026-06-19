@@ -16,7 +16,7 @@ export class TaskExtractor {
 		if (!file) return [];
 
 		const cache = this.app.metadataCache.getFileCache(file);
-		if (!cache || !cache.listItems) return [];
+		if (!cache?.listItems) return [];
 
 		// Read the file content to get the actual text for tasks
 		const content = await this.app.vault.cachedRead(file);

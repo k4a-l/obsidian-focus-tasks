@@ -16,9 +16,10 @@ export interface ActiveTrackingTask {
 	isUpcoming?: boolean;
 }
 
-export async function getDailyNoteConfig(
-	app: App,
-): Promise<{ folder?: string; format?: string } | null> {
+export function getDailyNoteConfig(): {
+	folder?: string;
+	format?: string;
+} | null {
 	try {
 		const settings = getDailyNoteSettings();
 		return {
@@ -339,7 +340,6 @@ export function updateBannerContent(
 						: isWarning
 							? "k4a-banner-row is-warning"
 							: "k4a-banner-row";
-
 				const row = bannerEl.createDiv({ cls: rowCls });
 				row.addEventListener("click", async (e) => {
 					e.stopPropagation(); // Prevent trigger bannerEl click
@@ -350,8 +350,8 @@ export function updateBannerContent(
 				});
 
 				const leftContainer = row.createDiv({ cls: "k4a-banner-left" });
-				const iconEl = leftContainer.createSpan({ cls: "k4a-banner-icon" });
 
+				const iconEl = leftContainer.createSpan({ cls: "k4a-banner-icon" });
 				iconEl.textContent = task.isCompleted
 					? "✅"
 					: task.isUpcoming
@@ -359,6 +359,26 @@ export function updateBannerContent(
 						: task.isRangeActive
 							? "⏱️"
 							: "⏳";
+
+				const timerEl = leftContainer.createSpan({
+					cls: "k4a-banner-timer",
+				});
+				const timerTextEl = timerEl.createSpan({
+					cls: "k4a-banner-timer-text",
+				});
+				timerTextEl.setAttribute("data-task-index", String(i));
+
+				const elapsedStr = calculateElapsedTime(
+					task.startTime,
+					task.endTime,
+					task.isCompleted,
+				);
+				timerTextEl.textContent = elapsedStr;
+
+				// 経過時間とタスク名の間の垂直区切り線
+				leftContainer.createSpan({
+					cls: "k4a-banner-divider",
+				});
 
 				const taskNameEl = leftContainer.createSpan({
 					cls: "k4a-banner-task-name",
@@ -372,19 +392,6 @@ export function updateBannerContent(
 					cls: "k4a-banner-time-info",
 				});
 				timeInfoEl.textContent = timeRangeStr;
-
-				const rightContainer = row.createDiv({ cls: "k4a-banner-right" });
-				const timerEl = rightContainer.createSpan({
-					cls: "k4a-banner-timer",
-				});
-				timerEl.setAttribute("data-task-index", String(i));
-
-				const elapsedStr = calculateElapsedTime(
-					task.startTime,
-					task.endTime,
-					task.isCompleted,
-				);
-				timerEl.textContent = elapsedStr;
 			}
 		} else {
 			bannerEl.className = "k4a-tasks-timer-banner is-empty";
@@ -393,17 +400,11 @@ export function updateBannerContent(
 				cls: "k4a-banner-warning-text",
 			});
 			leftContainer.textContent = "📅 取り組んでいるタスクはありません";
-
-			const rightContainer = bannerEl.createDiv({
-				cls: "k4a-banner-timer",
-			});
-			rightContainer.textContent = "--:--";
-			rightContainer.setAttribute("data-task-index", "none");
 		}
 		return activeTasks;
 	} else {
 		if (activeTasks.length > 0) {
-			const timerEls = bannerEl.querySelectorAll(".k4a-banner-timer");
+			const timerEls = bannerEl.querySelectorAll(".k4a-banner-timer-text");
 			timerEls.forEach((el) => {
 				if (el instanceof HTMLElement) {
 					const indexAttr = el.getAttribute("data-task-index");
