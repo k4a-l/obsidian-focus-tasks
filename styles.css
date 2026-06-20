@@ -161,6 +161,17 @@
     max-width: 12em;
     overflow-x: clip;
     text-overflow: ellipsis;
+
+	a.internal-link {
+		color: inherit !important;
+		text-decoration: underline;
+		text-decoration-style: dotted;
+		cursor: pointer;
+
+		&:hover {
+            text-decoration-style: solid;
+		}
+	}
 }
 
 .k4a-banner-time-info {

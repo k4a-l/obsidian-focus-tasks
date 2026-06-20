@@ -178,7 +178,7 @@ export function createBanner(
 	upcomingThreshold: number,
 ): HTMLElement {
 	const banner = view.contentEl.createDiv({
-		cls: "k4a-tasks-timer-banner",
+		cls: "k4a-tasks-timer-banner cm-s-obsidian",
 	});
 
 	// タスクが空のときにバナー全体をクリックするとデイリーノートを開く
@@ -325,7 +325,7 @@ export function updateBannerContent(
 		bannerEl.empty();
 
 		if (activeTasks.length > 0) {
-			bannerEl.className = "k4a-tasks-timer-banner is-active";
+			bannerEl.className = "k4a-tasks-timer-banner cm-s-obsidian is-active";
 
 			for (let i = 0; i < activeTasks.length; i++) {
 				const task = activeTasks[i];
@@ -383,7 +383,13 @@ export function updateBannerContent(
 				const taskNameEl = leftContainer.createSpan({
 					cls: "k4a-banner-task-name",
 				});
-				taskNameEl.textContent = task.taskText;
+				const currentFile = getDailyNoteFile();
+				parseMarkdownAndWikiLinks(
+					task.taskText,
+					taskNameEl,
+					app,
+					currentFile?.path || "",
+				);
 
 				const timeRangeStr = task.endTime
 					? `(${task.startTime} - ${task.endTime})`
@@ -394,7 +400,7 @@ export function updateBannerContent(
 				timeInfoEl.textContent = timeRangeStr;
 			}
 		} else {
-			bannerEl.className = "k4a-tasks-timer-banner is-empty";
+			bannerEl.className = "k4a-tasks-timer-banner cm-s-obsidian is-empty";
 
 			const leftContainer = bannerEl.createDiv({
 				cls: "k4a-banner-warning-text",
@@ -498,4 +504,74 @@ export function toggleTaskTime(editor: Editor) {
 	}
 
 	editor.setLine(lineIndex, newLineText);
+}
+
+function parseMarkdownAndWikiLinks(
+	text: string,
+	parentEl: HTMLElement,
+	app: App,
+	currentFilePath: string,
+) {
+	const regex =
+		/(\[\[[^\]]+\]\]|\*\*[^*]+\*\*|\*[^*]+\*|~~[^~]+~~|`[^`]+`|==[^=]+==)/g;
+	const parts = text.split(regex);
+
+	for (const part of parts) {
+		if (!part) continue;
+
+		if (part.startsWith("[[") && part.endsWith("]]")) {
+			const content = part.slice(2, -2);
+			const pipeIndex = content.indexOf("|");
+			let linkPath = content;
+			let displayText = content;
+
+			if (pipeIndex !== -1) {
+				linkPath = content.substring(0, pipeIndex).trim();
+				displayText = content.substring(pipeIndex + 1).trim();
+			}
+
+			const linkEl = parentEl.createEl("a", {
+				cls: "internal-link",
+				text: displayText,
+			});
+			linkEl.addEventListener("click", async (e) => {
+				e.stopPropagation();
+				await app.workspace.openLinkText(linkPath, currentFilePath);
+			});
+			continue;
+		}
+
+		if (part.startsWith("**") && part.endsWith("**")) {
+			parentEl.createEl("strong", { text: part.slice(2, -2) });
+			continue;
+		}
+
+		if (part.startsWith("*") && part.endsWith("*")) {
+			parentEl.createEl("em", { text: part.slice(1, -1) });
+			continue;
+		}
+
+		if (part.startsWith("~~") && part.endsWith("~~")) {
+			parentEl.createEl("del", { text: part.slice(2, -2) });
+			continue;
+		}
+
+		if (part.startsWith("`") && part.endsWith("`")) {
+			parentEl.createEl("code", {
+				text: part.slice(1, -1),
+				cls: "cm-inline-code",
+			});
+			continue;
+		}
+
+		if (part.startsWith("==") && part.endsWith("==")) {
+			parentEl.createEl("span", {
+				text: part.slice(2, -2),
+				cls: "cm-highlight",
+			});
+			continue;
+		}
+
+		parentEl.createSpan({ text: part });
+	}
 }
